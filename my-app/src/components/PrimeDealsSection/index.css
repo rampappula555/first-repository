@@ -1,0 +1,34 @@
+.teamcard-container {
+  display: flex;
+  width: 80%;
+  height: 110px;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  border-radius: 7px;
+  border-width: 2px;
+  border-color: #ffffff;
+
+  padding: 6px;
+  background-color: #ffffff1d;
+}
+.logo {
+  width: 70px;
+}
+.team-name {
+  color: #ffffff;
+  font-size: 16px;
+  margin-left: 30px;
+}
+.kxp {
+  margin-right: 14px;
+}
+.links {
+  text-decoration: none;
+}
+.image {
+  width: 100px;
+}
+option:hover {
+  background-color: black;
+}

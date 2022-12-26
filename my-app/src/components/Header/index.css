@@ -1,0 +1,19 @@
+.navbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 25px;
+}
+.button-container {
+  display: flex;
+  justify-content: space-around;
+  width: 20%;
+}
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* right: 400px;
+  bottom: 400px; */
+  background-color: brown;
+}

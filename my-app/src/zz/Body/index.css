@@ -1,0 +1,13 @@
+.body-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.left {
+  background-color: aqua;
+}
+.mid {
+  background-color: pink;
+}
+.right {
+  background-color: aqua;
+}

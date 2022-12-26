@@ -1,0 +1,6 @@
+.all-products-header {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 40px;
+  padding-right: 40px;
+}

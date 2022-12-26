@@ -1,0 +1,14 @@
+.product-image {
+  width: 200px;
+  margin: 10px;
+}
+.filter-images {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+.images-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  overflow-y: scroll;
+  height: 500px;
+}

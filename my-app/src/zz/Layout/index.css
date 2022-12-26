@@ -1,0 +1,12 @@
+.layout-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 5fr 1fr;
+  text-align: center;
+}
+.aaa {
+  background-color: brown;
+}
+.footer-container {
+  background-color: blueviolet;
+}
