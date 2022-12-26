@@ -1,14 +1,23 @@
-.product-image {
-  width: 200px;
-  margin: 10px;
+* {
+  scroll-behavior: smooth;
 }
-.filter-images {
-  display: grid;
-  grid-template-columns: 1fr 3fr;
+.go-to-top-button {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
 }
-.images-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  overflow-y: scroll;
-  height: 500px;
+.top-button {
+  border: none;
+  color: aliceblue;
+  background-color: #0b69ff;
+  padding: 10px;
+  border-radius: 30px;
+  outline: none;
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+}
+.top-button-image {
+  width: 40px;
+  padding-right: 19px;
 }

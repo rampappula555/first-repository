@@ -1,88 +1,152 @@
 import "./index.css";
-import { Component } from "react";
-import Cookies from "js-cookie";
+import CartContext from "../../context/CartContext";
 import Header from "../Header";
-import CartContext from "../../context";
-class ProductItemDetails extends Component {
-  state = { detailsList: {}, count: 1 };
-
-  componentDidMount() {
-    this.getdetails();
-  }
-  getdetails = async () => {
-    const jwtToken = Cookies.get("jwt_token");
-    const options = {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    };
-
-    const { match } = this.props;
-    const { params } = match;
-    const { id } = params;
-
-    const response = await fetch(
-      `https://apis.ccbp.in/products/${id}`,
-      options
-    );
-    const data = await response.json();
-    console.log(data);
-    if (response.ok === true) {
-      const updateddata = {
-        imageUrl: data.image_url,
-        id: data.id,
-        price: data.price,
+import { AiOutlineStar } from "react-icons/ai";
+import { LineWave } from "react-loader-spinner";
+import "./index.css";
+import { useEffect, useState, useContext } from "react";
+import Cookies from "js-cookie";
+const apiStatusConsts = {
+  initial: "INITIAL",
+  success: "SUCCESS",
+  failure: "FAILURE",
+  progress: "PROGRESS",
+};
+const ProductItemDetails = (props) => {
+  const { match, history } = props;
+  const { params } = match;
+  const { id } = params;
+  const value = useContext(CartContext);
+  const { addtoCart } = value;
+  const [apiStatus, setApiStatus] = useState(apiStatusConsts.initial);
+  const [quantity, setQuantity] = useState(1);
+  const [eachProductdetails, setEachProductDetails] = useState({});
+  const [isClickedAddToCart, setisClickedAddToCart] = useState(false);
+  useEffect(() => {
+    setApiStatus(apiStatusConsts.progress);
+    const getProductDetails = async () => {
+      const jwtToken = Cookies.get("jwt_token");
+      const options = {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
       };
-      this.setState({ detailsList: updateddata });
+
+      const response = await fetch(
+        `https://apis.ccbp.in/products/${id}`,
+        options
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        const updatedData = {
+          id: data.id,
+          availability: data.availability,
+          brand: data.brand,
+          description: data.description,
+          imageUrl: data.image_url,
+          price: data.price,
+          rating: data.rating,
+          style: data.style,
+          totalReviews: data.total_reviews,
+          title: data.title,
+        };
+
+        setEachProductDetails(updatedData);
+        setApiStatus(apiStatusConsts.success);
+      }
+    };
+    getProductDetails();
+  }, [id]);
+
+  const getProgressView = () => {
+    return (
+      <div className="each-product-loader-container ">
+        <div>
+          <LineWave type="ThreeDots" color="#0b69ff" height="200" width="250" />
+        </div>
+      </div>
+    );
+  };
+
+  const onClickDecreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity((prevState) => prevState - 1);
     }
   };
-  getItems = () => {
-    return (
-      <CartContext.Consumer>
-        {(value) => {
-          const { onAddItem } = value;
-          const { detailsList, count } = this.state;
+  const onClickAddToCart = () => {
+    setisClickedAddToCart(true);
+    if (isClickedAddToCart === false) {
+      addtoCart({ ...eachProductdetails, quantity });
+    }
 
-          const onClickAddItem = () => {
-            const { count } = this.state;
-            // const updatedPrice = count * detailsList.price;
-            // console.log(`updated price: ${updatedPrice}`);
-            onAddItem({ ...detailsList, count });
-          };
-          const onClickD = () => {
-            const { count } = this.state;
-            if (count > 1) {
-              this.setState((prevState) => ({ count: prevState.count - 1 }));
-            }
-          };
-          const onClickI = () =>
-            this.setState((prevState) => ({ count: prevState.count + 1 }));
-          return (
-            <div>
-              <img
-                src={detailsList.imageUrl}
-                alt="img"
-                className="product-image"
-              />
-              <button onClick={onClickD}>-</button>
-              <p>{count}</p>
-              <button onClick={onClickI}>+</button>
-              <button onClick={onClickAddItem}>ADD ITEM</button>
-              <p>{detailsList.price}</p>
-            </div>
-          );
-        }}
-      </CartContext.Consumer>
-    );
+    if (isClickedAddToCart) {
+      history.push("/cart");
+    }
   };
-  render() {
+  const onClickIncreaseQuantity = () =>
+    setQuantity((prevState) => prevState + 1);
+  const getSuccessView = () => {
+    const {
+      availability,
+      brand,
+      description,
+      imageUrl,
+      price,
+      rating,
+      totalReviews,
+      title,
+    } = eachProductdetails;
     return (
       <div>
         <Header />
-        {this.getItems()}
+        <div className="eachproduct-details-container">
+          <div className="eachproduct-details-image-container">
+            <img
+              src={imageUrl}
+              alt="img"
+              className="eachproduct-details-image"
+            />
+          </div>
+          <div className="eachproduct-details-text-container">
+            <h1>{title}</h1>
+            <p>Rs {price}/-</p>
+            <div className="rating-container-productitem-details">
+              <p className="rating-product-item-details">{rating}</p>
+              <AiOutlineStar />
+            </div>
+            <p>{totalReviews} Reviews</p>
+            <p>{description}</p>
+            <p>Availability: {availability}</p>
+            <p>Brand: {brand}</p>
+            <div className="line"></div>
+            {isClickedAddToCart ? (
+              <div className="added-to-cart-text">
+                <p>ADDED TO CART</p>
+              </div>
+            ) : (
+              <div className="eachproduct-buttons-container">
+                <button onClick={onClickDecreaseQuantity}>-</button>
+                <p>{quantity}</p>
+                <button onClick={onClickIncreaseQuantity}>+</button>
+              </div>
+            )}
+            <button onClick={onClickAddToCart} className="add-to-cart-button">
+              {isClickedAddToCart ? "GO TO CART" : "ADD TO CART"}
+            </button>
+          </div>
+        </div>
       </div>
     );
+  };
+  switch (apiStatus) {
+    case apiStatusConsts.progress:
+      return getProgressView();
+    case apiStatusConsts.success:
+      return getSuccessView();
+    default:
+      return null;
   }
-}
+};
 export default ProductItemDetails;

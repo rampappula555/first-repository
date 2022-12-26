@@ -1,58 +1,102 @@
 import "./index.css";
-import { Component } from "react";
 import Cookies from "js-cookie";
+import { useState } from "react";
 import { Redirect } from "react-router-dom";
-class LoginForm extends Component {
-  state = { username: "", pasword: "", errorMessage: "", showErrorMsg: false };
-  onChangeInp = (event) => this.setState({ username: event.target.value });
-  onChangePwd = (event) => this.setState({ password: event.target.value });
-  onSubmitUserDetails = async (event) => {
+import { BiShow } from "react-icons/bi";
+
+const LoginForm = (props) => {
+  const [username, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const onChangeUsername = (event) => setUserName(event.target.value);
+  const onChangePassword = (event) => setPassword(event.target.value);
+  const onClickShowPassword = () => setShowPassword((prevState) => !prevState);
+  const onSubmitForm = async (event) => {
     event.preventDefault();
-    const { username, password } = this.state;
-    const userDetails = {
-      username,
-      password,
-    };
+    const userDetails = { username, password };
     const options = {
-      method: "POSt",
+      method: "POST",
       body: JSON.stringify(userDetails),
     };
-    const url = "https://apis.ccbp.in/login";
-    const response = await fetch(url, options);
+    const response = await fetch("https://apis.ccbp.in/login", options);
     const data = await response.json();
-    if (response.ok === true) {
-      const { history } = this.props;
+
+    if (response.ok) {
       Cookies.set("jwt_token", data.jwt_token, { expires: 30 });
+      const { history } = props;
       history.replace("/");
     } else if (response.ok === false) {
-      this.setState({ errorMessage: data.error_msg, showErrorMsg: true });
+      setErrorMessage(data.error_msg);
+      setShowErrorMessage(true);
     }
-    console.log(response);
   };
-
-  getLoginForm = () => {
-    const { errorMessage, showErrorMsg } = this.state;
-    return (
-      <div className="container">
-        <form onSubmit={this.onSubmitUserDetails}>
-          <label htmlFor="username">USERNAME</label>
-          <input onChange={this.onChangeInp} type="text" id="username" />
-          <br />
-          <label htmlFor="password">PASSWORD</label>
-          <input onChange={this.onChangePwd} type="password" id="password" />
-          <br />
-          <button type="submit">LOG IN</button>
-          {showErrorMsg && <p>{errorMessage}</p>}
-        </form>
-      </div>
-    );
-  };
-  render() {
-    const jwtToken = Cookies.get("jwt_token");
-    if (jwtToken !== undefined) {
-      return <Redirect to="/" />;
-    }
-    return this.getLoginForm();
+  const jwtToken = Cookies.get("jwt_token");
+  if (jwtToken !== undefined) {
+    return <Redirect to="/" />;
   }
-}
+
+  return (
+    <div className="loginpage-container">
+      <div className="shopping-image-container">
+        <img
+          src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-login-img.png"
+          alt="img"
+          className="shopping-image"
+        />
+      </div>
+      <div>
+        <div>
+          <div className="form-details-container">
+            <div>
+              <img
+                src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
+                alt="img"
+                className="website-logo"
+              />
+            </div>
+            <form onSubmit={onSubmitForm} className="form-details">
+              <label htmlFor="username">USERNAME</label>
+              <br />
+              <input
+                onChange={onChangeUsername}
+                id="username"
+                type="text"
+                value={username}
+              />
+              <br />
+              <label htmlFor="password">PASSWORD</label>
+              <br />
+              <input
+                onChange={onChangePassword}
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+              />
+              {password.length > 0 && (
+                <div className="show-password-icon-btn-container">
+                  <button
+                    className="show-password-icon-btn"
+                    onClick={onClickShowPassword}
+                  >
+                    <BiShow />
+                  </button>
+                </div>
+              )}
+              <br />
+              <button className="login-button" type="submit">
+                Login
+              </button>
+
+              {showErrorMessage && (
+                <p className="error-message">*{errorMessage}</p>
+              )}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 export default LoginForm;

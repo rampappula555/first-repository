@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import "./index.css";
 const NoInternetConnection = (props) => {
   const [isOnline, setOnline] = useState(true);
 
@@ -18,7 +18,11 @@ const NoInternetConnection = (props) => {
   if (isOnline) {
     return props.children;
   } else {
-    return <h1>No Interner Connection. Please try again later.</h1>;
+    return (
+      <div className="nointernet-container">
+        <h1>No Internet Connection. Please try again later.</h1>
+      </div>
+    );
   }
 };
 

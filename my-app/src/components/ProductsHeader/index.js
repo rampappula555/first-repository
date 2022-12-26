@@ -1,41 +1,36 @@
 import "./index.css";
-import { Component } from "react";
-class ProductsHeader extends Component {
-  state = { userInp: "" };
-  onChangeFilter = (event) => {
-    const { onChangeOptionId } = this.props;
-    onChangeOptionId(event.target.value);
-  };
-
-  onChangeUserInp = (event) => this.setState({ userInp: event.target.value });
-  onKeyDownEvent = (event) => {
+import { useState } from "react";
+const ProductsHeader = (props) => {
+  const { activeOptionId, changePrice, onSearchInput } = props;
+  const [userInputSearch, setUserInputSearch] = useState("");
+  const onChangeUserInputSearch = (event) =>
+    setUserInputSearch(event.target.value);
+  const onKeyDownSearch = (event) => {
     if (event.key === "Enter") {
-      const { userInp } = this.state;
-      const { onClickEnter } = this.props;
-      onClickEnter(userInp);
+      onSearchInput(userInputSearch);
     }
   };
-
-  render() {
-    const { userInp } = this.state;
-    const { sortbyOptions, activeOptionId } = this.props;
-    return (
-      <div className="all-products-header">
+  const onChangePrice = (event) => changePrice(event.target.value);
+  return (
+    <div className="products-header-container">
+      <div className="input-heading-container">
         <input
           type="search"
-          value={userInp}
-          onKeyDown={this.onKeyDownEvent}
-          onChange={this.onChangeUserInp}
+          value={userInputSearch}
+          onChange={onChangeUserInputSearch}
+          onKeyDown={onKeyDownSearch}
         />
-        <select value={activeOptionId} onChange={this.onChangeFilter}>
-          {sortbyOptions.map((eachOption) => (
-            <option value={eachOption.optionId} key={eachOption.optionId}>
-              {eachOption.displayText}
-            </option>
-          ))}
+        <h1 className="allproducts-heading">All Products</h1>
+      </div>
+      <div className="sortby-container">
+        <p>Sortby</p>
+        <p className="price-text">Price</p>
+        <select onChange={onChangePrice} value={activeOptionId}>
+          <option value="PRICE_HIGH">(High-Low)</option>
+          <option value="PRICE_LOW">(Low-High)</option>
         </select>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 export default ProductsHeader;

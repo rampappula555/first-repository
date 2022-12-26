@@ -1,102 +1,44 @@
 import "./index.css";
 import Header from "../Header";
-import CartContext from "../../context";
-// import CartListView from "../CartListView";
+import CartListView from "../CartListView";
+import CartContext from "../../context/CartContext";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
+const Cart = () => {
+  const value = useContext(CartContext);
+  const { deletecartList, cartList } = value;
 
-const Cart = () => (
-  <CartContext.Consumer>
-    {(value) => {
-      const { cartList, onDeleteItem, onIncrement, onDecrement } = value;
-      let temp = [];
-      let updatedArray = [];
-      cartList.map((eachItem) => {
-        if (temp.includes(eachItem.id)) {
-          for (let i in updatedArray) {
-            if (updatedArray[i].id === eachItem.id) {
-              updatedArray.splice(i, 1, {
-                ...eachItem,
-                count: updatedArray[i].count + eachItem.count,
-              });
-            }
-          }
-        } else {
-          updatedArray.push(eachItem);
-          temp.push(eachItem.id);
-        }
-      });
-      // const TotalPrice = updatedArray.reduce((prevValue, currentValue) => {
-      //   return prevValue + currentValue.price;
-      // }, 0);
-      const totalPrice = updatedArray.map(
-        (eachItem) => eachItem.count * eachItem.price
-      );
-      const flag = totalPrice.reduce((prev, acc) => prev + acc, 0);
-      console.log(`flag id${flag}`);
-
-      console.log(cartList);
-      console.log(updatedArray);
-      const onclickDecrement = (id) => {
-        const res = updatedArray.map((eachItem) => {
-          if (eachItem.id === id && eachItem.count > 1) {
-            return { ...eachItem, count: eachItem.count - 1 };
-          }
-          return eachItem;
-        });
-        onDecrement(res);
-      };
-      const onClickIncrement = (id) => {
-        const res = updatedArray.map((eachItem) => {
-          if (eachItem.id === id) {
-            return { ...eachItem, count: eachItem.count + 1 };
-          }
-          return eachItem;
-        });
-        onIncrement(res);
-      };
-      return (
+  return (
+    <div className="cart-main-container">
+      <Header />
+      {cartList.length > 0 ? (
         <div>
-          <Header />
-          <div>
-            {updatedArray.map((eachItem) => (
-              <div key={eachItem.id} className="cart-details-container">
-                <img src={eachItem.imageUrl} alt="img" className="cart-image" />
-                <button
-                  onClick={() => {
-                    onclickDecrement(eachItem.id);
-                  }}
-                >
-                  -
-                </button>
-                <p>quantity {eachItem.count}</p>
-
-                <button
-                  onClick={() => {
-                    onClickIncrement(eachItem.id);
-                  }}
-                >
-                  +
-                </button>
-                <p>single item price :{eachItem.price}</p>
-
-                <button
-                  onClick={() => {
-                    onDeleteItem(eachItem.id);
-                  }}
-                >
-                  Delete
-                </button>
-                <p>{eachItem.price * eachItem.count}</p>
-              </div>
-            ))}
-            {flag !== 0 && <h1>{flag}</h1>}
-            {/* {updatedArray.map((eachItem) => (
-              <CartListView key={eachItem.id} eachItem={eachItem} />
-            ))} */}
+          <div className="remove-all-button-container">
+            <h1>My cart</h1>
+            <button
+              onClick={() => deletecartList()}
+              className="remove-all-button"
+            >
+              Remove All
+            </button>
           </div>
+          <CartListView />
         </div>
-      );
-    }}
-  </CartContext.Consumer>
-);
-
+      ) : (
+        <div className="no-cart-item-container">
+          <div>
+            <img
+              src="https://cdni.iconscout.com/illustration/premium/thumb/confusing-woman-due-to-empty-cart-4558760-3780056.png"
+              alt="img"
+              className="no-cart-item-image"
+            />
+          </div>
+          <Link to="/products" className="shopnow-button">
+            Continue Shopping
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+};
 export default Cart;
